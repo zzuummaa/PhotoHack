@@ -1,24 +1,21 @@
-package ru.zuma.photohack;
+package ru.zuma.photohack.photolab;
 
 import com.google.gson.Gson;
-// import okhttp3.*;
-import okhttp3.OkHttpClient;
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import okhttp3.Response;
-import okhttp3.MediaType;
-
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import ru.zuma.photohack.RequestBodyUtil;
+
+// import okhttp3.*;
 
 class Steps {
     Step[] steps;
@@ -27,13 +24,6 @@ class Steps {
 class Step {
     long id;
     String[] image_urls;
-}
-
-class ImageRequest {
-    String url;
-    int rotate;
-    int flip;
-    String crop;
 }
 
 

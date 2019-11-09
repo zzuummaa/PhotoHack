@@ -1,15 +1,18 @@
-package ru.zuma.photohack
+package ru.zuma.photohack.photolab
 
 import android.app.Activity
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import java.io.ByteArrayInputStream
 import java.io.InputStream
+
+object TemplateIds {
+    val REST_ID = "1001965"
+    val JOB_ID  = "1001966"
+}
 
 class PhotolabService(val activity: Activity) {
     val clientPhotolab = ClientPhotolab()
-    val templateName = "1001918"
 
     fun uploadImage(uri: Uri) = clientPhotolab.ImageUpload (
         getFileName(uri),
@@ -32,5 +35,19 @@ class PhotolabService(val activity: Activity) {
             return displayName
         }
         return null
+    }
+
+    fun processTemplate(imageURL: String, templateId: String) : String {
+        val testArr = ArrayList<ImageRequest>()
+        val testIm = ImageRequest()
+        testIm.url = imageURL
+        testIm.crop = "0,0,1,1"
+        testIm.flip = 0
+        testIm.rotate = 0
+        testArr.add(testIm)
+        var testArrRequests = arrayOfNulls<ImageRequest>(testArr.size)
+        testArrRequests = testArr.toArray(testArrRequests)
+
+        return clientPhotolab.TemplateProcess(templateId, testArrRequests)
     }
 }

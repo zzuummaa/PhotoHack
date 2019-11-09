@@ -11,8 +11,9 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_message.*
+import ru.zuma.photohack.photolab.PhotolabService
+import ru.zuma.photohack.photolab.TemplateIds
 
 
 val LOAD_IMAGE_REQ_CODE = 1
@@ -69,8 +70,10 @@ class MainActivity : AppCompatActivity() {
             data.data?.let {
                 Log.w(javaClass.simpleName, "uri path: ${it}")
                 launch {
-                    val url = photolabService.uploadImage(it)
-                    Log.i(javaClass.simpleName, "Image available ${url}")
+                    val srcImgURL = photolabService.uploadImage(it)
+                    Log.i(javaClass.simpleName, "Image uploaded ${srcImgURL}")
+                    val url = photolabService.processTemplate(srcImgURL, TemplateIds.REST_ID)
+                    Log.i(javaClass.simpleName, "Image processed ${srcImgURL}")
                     val imageStream = photolabService.downloadImage(url)
                     val imageBitmap = BitmapFactory.decodeStream(imageStream)
                     runOnUiThread {
