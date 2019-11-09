@@ -3,6 +3,7 @@ package ru.zuma.photohack
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -31,6 +32,9 @@ class MessageAdapter(private val myDataset: ArrayList<Message>) :
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.itemView.findViewById<TextView>(R.id.tv_message).text = myDataset[position].text
+        myDataset[position].image.let {
+            holder.itemView.findViewById<ImageView>(R.id.iv_message).setImageBitmap(it)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -37,7 +37,8 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_message"
                 tools:src="@drawable/ic_attach_file"
                 tools:layout_width="100dp"
-                tools:layout_height="100dp"/>
+                tools:layout_height="100dp"
+                android:adjustViewBounds="true"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

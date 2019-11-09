@@ -1,19 +1,18 @@
 package ru.zuma.photohack
 
-import android.content.Context
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.provider.OpenableColumns
-
-
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_message.*
 
 
 val LOAD_IMAGE_REQ_CODE = 1
@@ -24,11 +23,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mesagesAdapter: RecyclerView.Adapter<*>
     private lateinit var messages: ArrayList<Message>
 
-    private lateinit var clientPhotolab: ClientPhotolab
+    private lateinit var photolabService: PhotolabService
+    private lateinit var dialogFragment: FireMissilesDialogFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        dialogFragment = FireMissilesDialogFragment()
 
         messages = arrayListOf(
             Message("Adadwa"),
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             adapter = mesagesAdapter
         }
 
-        clientPhotolab = ClientPhotolab()
+        photolabService = PhotolabService(this)
 
         findViewById<ImageView>(R.id.iv_attach_file).apply {
             setOnClickListener {
@@ -67,11 +69,19 @@ class MainActivity : AppCompatActivity() {
             data.data?.let {
                 Log.w(javaClass.simpleName, "uri path: ${it}")
                 launch {
-                    val url = clientPhotolab.ImageUpload (
-                        getFileName(it),
-                        contentResolver.openInputStream(it)
-                    )
-                    Log.i(javaClass.simpleName, url)
+                    val url = photolabService.uploadImage(it)
+                    Log.i(javaClass.simpleName, "Image available ${url}")
+                    val imageStream = photolabService.downloadImage(url)
+                    val imageBitmap = BitmapFactory.decodeStream(imageStream)
+                    runOnUiThread {
+//                        iv_attach_file.setImageBitmap(imageBitmap)
+                        dialogFragment.setBitmapDrawable(imageBitmap)
+                        dialogFragment.setOnSubmit {
+                            messages.add(Message(tv_message.text.toString(), imageBitmap))
+                            mesagesAdapter.notifyDataSetChanged()
+                        }
+                        dialogFragment.show(supportFragmentManager, "dlg1")
+                    }
                 }
             }
         }
@@ -79,18 +89,23 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun getFileName(uri: Uri) : String? {
-        val cursor = getContentResolver()
-            .query(uri, null, null, null, null, null)
+    fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+        val builder = AlertDialog.Builder(this)
+        // Get the layout inflater
+        val inflater = getLayoutInflater()
 
-        if (cursor != null && cursor.moveToFirst()) {
-            val displayName = cursor.getString(
-                cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            )
-            Log.i(javaClass.simpleName, "Display Name: $displayName")
-            return displayName
-        }
-        return null
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialog_submit_filter, null))
+            // Add action buttons
+            .setPositiveButton("Submit",
+                DialogInterface.OnClickListener { dialog, id ->
+                    // sign in the user ...
+                })
+            .setNegativeButton("Cancel",
+                DialogInterface.OnClickListener { dialog, id ->
+                    // TODO
+                })
+        return builder.create()
     }
-
 }
