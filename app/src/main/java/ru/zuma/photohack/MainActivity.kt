@@ -87,11 +87,10 @@ class MainActivity : AppCompatActivity() {
                     val relevantSituation = predictions.maxBy { it -> it.probability }
                     if (relevantSituation!!.situation_id == "0") {
                         runOnUiThread {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Situation ${relevantSituation.situation_name} found, but template is not available",
-                                LENGTH_LONG
-                            ).show()
+                            val text = tv_message.text.toString() +
+                                    "\nSituation '${relevantSituation.situation_name}' found, but template is not available"
+                            messages.add(Message(text, null))
+                            mesagesAdapter.notifyDataSetChanged()
                         }
                         return@launch
                     }
@@ -116,25 +115,5 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-        val builder = AlertDialog.Builder(this)
-        // Get the layout inflater
-        val inflater = getLayoutInflater()
-
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_submit_filter, null))
-            // Add action buttons
-            .setPositiveButton("Submit",
-                DialogInterface.OnClickListener { dialog, id ->
-                    // sign in the user ...
-                })
-            .setNegativeButton("Cancel",
-                DialogInterface.OnClickListener { dialog, id ->
-                    // TODO
-                })
-        return builder.create()
     }
 }

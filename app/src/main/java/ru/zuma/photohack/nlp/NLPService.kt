@@ -15,7 +15,7 @@ import org.w3c.dom.Entity
 val JSON = MediaType.parse("application/json; charset=utf-8")
 
 class NLPService {
-    private val baseURL = "http://10.1.38.120:8000/"
+    private val baseURL = "http://192.168.88.254:8000/"
     private val gson = Gson()
 
     fun predictSituation(message: String) : ArrayList<PredictSituatuionResult> {
@@ -33,6 +33,6 @@ class NLPService {
             return ArrayList()
         }
 
-        return Gson().fromJson(json, object : TypeToken<ArrayList<PredictSituatuionResult>>() {}.type)
+        return Gson().fromJson(response.body()!!.string(), object : TypeToken<ArrayList<PredictSituatuionResult>>() {}.type)
     }
 }
